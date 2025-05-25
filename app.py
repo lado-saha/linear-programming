@@ -10,16 +10,16 @@ with gr.Blocks(theme=gr.themes.Ocean()) as demo:
     with gr.Row():
         gr.Markdown(
             """
-            <div style="text-align:center; padding: 10px 0;">
-                <h1 style="color: inherit; margin-bottom: 5px;">Simplex Method Solver (HEC Style)</h1>
-                <p style="color: inherit; font-size: 1.1em; margin-top:0px;">Linear Programming Problem Resolution</p>
+            <div style="text-align:center;">
+                <h1 style="color: inherit; margin-bottom: 2px;">Simplex & Big M Method Solver</h1>
+                <p style="color: inherit; font-size: 1.1rem;">Linear Programming Problem Resolution</p>
             </div>
             """
         )
     gr.Markdown("---")
 
     with gr.Row(equal_height=False):
-        with gr.Column(scale=3, min_width=380):  # Slightly wider min_width
+        with gr.Column(scale=3, min_width=280):  # Slightly wider min_width
             with gr.Group():
                 gr.Markdown(
                     "### <div style='text-align:center;'>Problem Definition</div>")
@@ -62,11 +62,7 @@ with gr.Blocks(theme=gr.themes.Ocean()) as demo:
                     # If default is 1 constraint but we have defaults for 3
                     if int(num_constraints.value) < 3 and MAX_CONSTRAINTS >= 3:
                         # Trigger visibility update if possible, or user sets it.
-                        num_constraints.value = 3
-                        # Note: Directly setting num_constraints.value here might not trigger change event immediately
-                        # It's better to guide user to set it or have it default to 3 initially.
-                        # For testing, I'll assume num_constraints is set to 3 by default for this problem.
-                        # Let's adjust the default value of num_constraints for this test case.
+                        num_constraints.value = 1
                         # num_constraints = gr.Number(label="Constraints", value=3, ...) # If you want to hardcode for test
 
             solve_button = gr.Button(
@@ -74,7 +70,7 @@ with gr.Blocks(theme=gr.themes.Ocean()) as demo:
 
         with gr.Column(scale=7):
             with gr.Tabs():
-                with gr.TabItem("Solution Steps & Tableaux (HEC Style)"):
+                with gr.TabItem("Solution Steps & Tableaux"):
                     gr.Markdown(
                         "### <div style='text-align:center;'>Step-by-Step Solution</div>")
                     output_steps_html = gr.HTML(label=None)
