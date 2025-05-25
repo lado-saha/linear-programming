@@ -60,9 +60,8 @@ La programmation linéaire (PL) est une technique mathématique d'optimisation p
 1.  **Clonez le dépôt (si applicable) ou copiez les fichiers du projet :**
 
     ```bash
-    # Si c'est un dépôt git
-    # git clone <url_du_depot>
-    # cd linear-programming
+    git clone "https://github.com/lado-saha/linear-programming"
+    cd linear-programming
     ```
 
     Assurez-vous d'avoir les fichiers `app.py`, `simplex_logic.py`, et `requirements.txt` dans le même répertoire.
@@ -94,7 +93,7 @@ La programmation linéaire (PL) est une technique mathématique d'optimisation p
 2.  **Accédez à l'interface web :**
     L'application sera généralement accessible à l'adresse `http://127.0.0.1:7860` (ou une adresse similaire affichée dans le terminal). Ouvrez cette URL dans votre navigateur web.
 
-    [Capture d'écran de l'interface au démarrage - `app_start_screen.png`]
+![Panneau de Saisie](readme_images/app_start_screen.png)
 
 ### Définition du Problème
 
@@ -158,7 +157,7 @@ Le projet est structuré en deux fichiers Python principaux :
   - `format_tableau_html` : Prend le DataFrame du tableau et le formate en une chaîne HTML stylisée pour un affichage précis .
   - `solve_simplex_problem_style` : Orchestre l'ensemble du processus de résolution, gérant la Phase I (si nécessaire) et la Phase II.
 
-## 7. Méthodologie : Algorithme du Simplex 
+## 7. Méthodologie : Algorithme du Simplex
 
 L'implémentation suit les étapes classiques de l'algorithme du Simplex, en adaptant la présentation des tableaux .
 
@@ -226,7 +225,6 @@ Sujet à :
 1.  `x₁ + 3x₂ ≤ 15`
 2.  `2x₁ + x₂ ≥ 8`
 3.  `x₁ + x₂ = 7`
-
 
 ## 9. Développements Futurs Possibles
 
