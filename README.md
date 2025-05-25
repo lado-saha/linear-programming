@@ -1,10 +1,8 @@
-# Solveur de Programmation Linéaire : Méthodes Simplex et Big M
+# Solveur de Programmation Linéaire : Méthodes Simplex, Big M et Duale
 
-Ce projet est une application web développée avec Python et Gradio pour résoudre des problèmes de programmation linéaire. Il implémente la méthode Simplex standard ainsi que la méthode des Deux Phases (similaire à la méthode Big M) pour gérer tous les types de contraintes (`≤`, `≥`, `=`).
+Ce projet est une application web développée avec Python et Gradio pour résoudre des problèmes de programmation linéaire. Il implémente la méthode Simplex standard, la méthode des Deux Phases (similaire à la méthode Big M) pour gérer tous les types de contraintes (`≤`, `≥`, `=`), ainsi que la **méthode du Simplex Dual**. L'affichage des tableaux du Simplex s'inspire du format HEC Montréal.
 
-**Date de génération du contexte :** Dimanche 25 Mai 2025, 02:39:26 WAT
-
-<!-- [Capture d'écran de l'interface principale de l'application - `app_main_interface.png`] -->
+**Date de génération du contexte :** Dimanche 25 Mai 2025, 02:39:26 WAT *(Note : README mis à jour pour les fonctionnalités actuelles)*
 
 ![Interface Principale](readme_images/app_main_interface.png)
 
@@ -15,68 +13,69 @@ Ce projet est une application web développée avec Python et Gradio pour résou
 3.  [Prérequis](#prérequis)
 4.  [Installation](#installation)
 5.  [Guide d'Utilisation](#guide-dutilisation)
-    - [Définition du Problème](#définition-du-problème)
-    - [Lancement de la Résolution](#lancement-de-la-résolution)
-    - [Interprétation des Résultats](#interprétation-des-résultats)
+    *   [Sélection de la Méthode de Résolution](#sélection-de-la-méthode-de-résolution)
+    *   [Définition du Problème](#définition-du-problème)
+    *   [Lancement de la Résolution](#lancement-de-la-résolution)
+    *   [Interprétation des Résultats](#interprétation-des-résultats)
 6.  [Architecture du Projet](#architecture-du-projet)
-    - [Interface Utilisateur (`app.py`)](#interface-utilisateur-apppy)
-    - [Logique du Simplex (`simplex_logic.py`)](#logique-du-simplex-simplex_logicpy)
-7.  [Méthodologie : Algorithme du Simplex](#méthodologie--algorithme-du-simplex-style)
-    - [Mise en Forme Standard](#mise-en-forme-standard)
-    - [Tableau du Simplex](#tableau-du-simplex)
-    - [Méthode des Deux Phases (pour contraintes `≥` et `=`)](#méthode-des-deux-phases-pour-contraintes--et-)
-8.  [Exemples](#exemples)
-    - [Problème Standard (PL)](#problème-standard-pl)
-    - [Problème avec Méthode des Deux Phases (PG)](#problème-avec-méthode-des-deux-phases-pg)
-9.  [Développements Futurs Possibles](#développements-futurs-possibles)
+    *   [Interface Utilisateur (`app.py`)](#interface-utilisateur-apppy)
+    *   [Logique du Simplex (`simplex_logic.py`)](#logique-du-simplex-simplex_logicpy)
+7.  [Méthodologie : Algorithmes du Simplex](#méthodologie--algorithmes-du-simplex)
+    *   [Mise en Forme Standard](#mise-en-forme-standard)
+    *   [Tableau du Simplex (Style HEC)](#tableau-du-simplex-style-hec)
+    *   [Simplex Primal et Méthode des Deux Phases](#simplex-primal-et-méthode-des-deux-phases)
+    *   [Méthode du Simplex Dual](#méthode-du-simplex-dual)
+8.  [Dualité en Programmation Linéaire](#dualité-en-programmation-linéaire)
+    *   [Principe de la Dualité](#principe-de-la-dualité)
+    *   [Exemple de Transformation Primal-Dual](#exemple-de-transformation-primal-dual)
+9.  [Exemples d'Utilisation](#exemples-dutilisation)
+    *   [Problème Standard (Simplex Primal)](#problème-standard-simplex-primal)
+    *   [Problème avec Méthode des Deux Phases](#problème-avec-méthode-des-deux-phases)
+    *   [Problème pour le Simplex Dual](#problème-pour-le-simplex-dual)
+10. [Développements Futurs Possibles](#développements-futurs-possibles)
 
 ## 1. Introduction
 
-La programmation linéaire (PL) est une technique mathématique d'optimisation permettant de maximiser ou minimiser une fonction objectif linéaire sous un ensemble de contraintes linéaires. Ce solveur a été conçu pour être un outil pédagogique et pratique, affichant clairement chaque étape de l'algorithme du Simplex, y compris les tableaux intermédiaires.
+La programmation linéaire (PL) est une technique mathématique d'optimisation permettant de maximiser ou minimiser une fonction objectif linéaire sous un ensemble de contraintes linéaires. Ce solveur a été conçu pour être un outil pédagogique et pratique, affichant clairement chaque étape des algorithmes du Simplex (Primal, Deux-Phases, Dual), y compris les tableaux intermédiaires, dans un format inspiré de celui de HEC Montréal.
 
 ## 2. Fonctionnalités
 
-- Résolution de problèmes de maximisation et de minimisation.
-- Gestion des contraintes de type `≤`, `≥`, et `=`.
-- Implémentation de la méthode Simplex standard et de la méthode des Deux Phases pour les problèmes nécessitant des variables artificielles.
-- Affichage détaillé de chaque tableau du Simplex, incluant :
-  - Les coefficients de la fonction objectif (`Cj`).
-  - La base actuelle (variables de base et leurs coefficients `Cb`).
-  - Les coefficients des contraintes.
-  - Les valeurs du membre droit (`bi`).
-  - La ligne `Zj`.
-  - La ligne critère `Cj - Zj`.
-- Identification claire de la variable entrante, de la variable sortante et de l'élément pivot à chaque itération.
-- Affichage de la solution optimale (valeurs des variables de décision et de la fonction objectif) ou indication d'infaisabilité/non-bornitude.
-- Interface utilisateur web conviviale et responsive construite avec Gradio, utilisant le thème "Ocean".
+*   Résolution de problèmes de maximisation et de minimisation.
+*   Gestion des contraintes de type `≤`, `≥`, et `=`.
+*   **Sélection de la méthode de résolution :**
+    *   Simplex Primal (avec Méthode des Deux Phases pour `≥`, `=`).
+    *   Simplex Dual.
+*   Affichage détaillé de chaque tableau du Simplex (style HEC), incluant :
+    *   Les coefficients de la fonction objectif (`Cj`).
+    *   La base actuelle (variables de base et leurs coefficients `Cb`).
+    *   Les coefficients des contraintes.
+    *   Les valeurs du membre droit (`bi`).
+    *   La ligne `Zj`.
+    *   La ligne critère `Cj - Zj`.
+*   Identification claire de la variable entrante, de la variable sortante et de l'élément pivot à chaque itération, adaptée à la méthode choisie.
+*   Affichage de la solution optimale (valeurs des variables de décision et de la fonction objectif) ou indication d'infaisabilité/non-bornitude.
+*   Interface utilisateur web conviviale et responsive construite avec Gradio, utilisant le thème "Ocean".
+*   Explication du concept de dualité avec un exemple.
 
 ## 3. Prérequis
 
-- Python 3.7 ou supérieur
-- Pip (gestionnaire de paquets Python)
+*   Python 3.7 ou supérieur
+*   Pip (gestionnaire de paquets Python)
 
 ## 4. Installation
 
-1.  **Clonez le dépôt (si applicable) ou copiez les fichiers du projet :**
-
+1.  **Clonez le dépôt :**
     ```bash
     git clone "https://github.com/lado-saha/linear-programming"
     cd linear-programming
     ```
-
-    Assurez-vous d'avoir les fichiers `app.py`, `simplex_logic.py`, et `requirements.txt` dans le même répertoire.
-
 2.  **Créez un environnement virtuel (recommandé) :**
-
     ```bash
     python -m venv venv
     ```
-
     Activez l'environnement :
-
-    - Sous Windows : `venv\Scripts\activate`
-    - Sous macOS/Linux : `source venv/bin/activate`
-
+    *   Sous Windows : `venv\Scripts\activate`
+    *   Sous macOS/Linux : `source venv/bin/activate`
 3.  **Installez les dépendances :**
     ```bash
     pip install -r requirements.txt
@@ -86,52 +85,60 @@ La programmation linéaire (PL) est une technique mathématique d'optimisation p
 ## 5. Guide d'Utilisation
 
 1.  **Lancez l'application :**
-    Ouvrez un terminal dans le répertoire du projet (avec l'environnement virtuel activé) et exécutez :
     ```bash
     python app.py
     ```
 2.  **Accédez à l'interface web :**
-    L'application sera généralement accessible à l'adresse `http://127.0.0.1:7860` (ou une adresse similaire affichée dans le terminal). Ouvrez cette URL dans votre navigateur web.
+    Ouvrez l'URL affichée (généralement `http://127.0.0.1:7860`) dans votre navigateur.
 
-![Panneau de Saisie](readme_images/app_start_screen.png)
+![Interface au démarrage](readme_images/app_start_screen.png)
+
+### Sélection de la Méthode de Résolution
+
+Avant de définir votre problème, choisissez la méthode de résolution souhaitée :
+
+*   **Solver Method (Méthode de Résolution) :**
+    *   **"Primal Simplex (Two-Phase)" :** Méthode standard. La Phase I est automatiquement invoquée si des variables artificielles sont nécessaires (contraintes `≥` ou `=`).
+    *   **"Dual Simplex" :** À utiliser lorsque le tableau initial est dual-admissible (ligne `Cj-Zj` "optimale") mais primal-infaisable (certains `bᵢ` négatifs). L'utilisateur doit s'assurer que le problème saisi est formulé de manière appropriée pour un démarrage direct du Simplex Dual.
+
+    <!-- [Capture d'écran du sélecteur de méthode - `app_method_selector.png`] -->
+    *(Vous pouvez ajouter une capture d'écran ici si le sélecteur est distinct)*
 
 ### Définition du Problème
 
-Le panneau de gauche de l'interface est dédié à la saisie des informations de votre problème de programmation linéaire :
+Le panneau de gauche est dédié à la saisie des informations de votre problème :
 
 ![Panneau de Saisie](readme_images/app_input_panel.png)
 
-- **Objective Type (Type d'objectif) :** Choisissez "Maximize" (Maximiser) ou "Minimize" (Minimiser).
-- **Variables :** Entrez le nombre de variables de décision (ex: `x₁`, `x₂`, ...).
-- **Constraints (Contraintes) :** Entrez le nombre de contraintes. Le nombre de champs de saisie pour les contraintes s'ajustera dynamiquement (jusqu'à un maximum de 10).
-- **Objective Function Coefficients (Coefficients de la fonction objectif) :** Entrez les coefficients de votre fonction objectif, séparés par des virgules. Par exemple, pour `Z = 3x₁ + 5x₂`, entrez `3,5`.
-- **Define Constraints Details (Détails des Contraintes) :** Pour chaque contrainte :
-  - **LHS Coeffs (Coeff. du membre gauche) :** Entrez les coefficients des variables pour cette contrainte, séparés par des virgules.
-  - **Op (Opérateur) :** Sélectionnez `≤`, `≥`, ou `=`.
-  - **RHS (Membre droit) :** Entrez la valeur du membre droit de la contrainte.
+*   **Objective Type (Type d'objectif) :** Choisissez "Maximize" (Maximiser) ou "Minimize" (Minimiser).
+*   **Variables :** Entrez le nombre de variables de décision (ex: `x₁`, `x₂`, ...).
+*   **Constraints (Contraintes) :** Entrez le nombre de contraintes.
+*   **Objective Function Coefficients :** Coefficients de votre fonction objectif, séparés par des virgules.
+*   **Define Constraints Details :** Pour chaque contrainte :
+    *   **LHS Coeffs :** Coefficients des variables, séparés par des virgules.
+    *   **Op (Opérateur) :** Sélectionnez `≤`, `≥`, ou `=`.
+    *   **RHS (Membre droit) :** Valeur du membre droit.
+    *   **Note pour le Simplex Dual :** Pour démarrer le Simplex Dual, il est typique d'avoir des `bᵢ` négatifs. Cela peut provenir de la transformation de contraintes `≥` en `≤` (par multiplication par -1).
 
 ### Lancement de la Résolution
 
-Une fois toutes les informations saisies, cliquez sur le bouton "📊 Solve Problem".
+Cliquez sur le bouton "📊 Solve Problem".
 
 ### Interprétation des Résultats
 
-Les résultats s'afficheront dans le panneau de droite, divisé en deux onglets :
+Les résultats s'affichent dans le panneau de droite, sous deux onglets :
 
-![Format Tableau](readme_images/app_results_tableaux.png)
+![Tableaux de Solution](readme_images/app_results_tableaux.png)
 
-- **Onglet "Solution Steps & Tableaux" :**
-  - Cette section affiche chaque itération de l'algorithme du Simplex sous forme de tableaux.
-  - Les informations clés comme la variable entrante, la variable sortante, l'élément pivot et le test du ratio sont indiquées pour chaque étape.
-  - Si la méthode des Deux Phases est utilisée (pour les contraintes `≥` ou `=`), les tableaux de la Phase I (minimisation des variables artificielles) et de la Phase II (résolution du problème original) seront distinctement affichés.
-- **Onglet "Final Summary" :**
+*   **Onglet "Solution Steps & Tableaux" :**
+    *   Affiche chaque itération de l'algorithme Simplex choisi.
+    *   Les tableaux sont formatés selon le style HEC.
+    *   Les variables entrante/sortante, l'élément pivot et le test du ratio (ou équivalent dual) sont indiqués.
+    *   Pour le Simplex Primal, les Phases I et II sont distinctement affichées si nécessaire.
+*   **Onglet "Final Summary" :**
+    *   Résumé de la solution : Statut (Optimal, Infaisable, Non borné), valeur optimale de l'objectif, et valeurs des variables de décision.
 
-  - Cette section présente un résumé de la solution :
-    - **Status :** Optimal, Infeasible (Infaisable), Unbounded (Non borné), ou une erreur.
-    - **Optimal Objective Value (Valeur optimale de l'objectif) :** Si une solution optimale est trouvée.
-    - **Variables :** Les valeurs des variables de décision à l'optimum.
-
-![Final Summary](readme_images/app_results_summary.png)
+![Résumé Final](readme_images/app_results_summary.png)
 
 ## 6. Architecture du Projet
 
@@ -139,101 +146,126 @@ Le projet est structuré en deux fichiers Python principaux :
 
 ### Interface Utilisateur (`app.py`)
 
-- Construit avec la bibliothèque **Gradio**.
-- Définit l'interface utilisateur web, y compris les champs de saisie, les boutons, et les zones d'affichage des résultats.
-- Gère les interactions utilisateur et appelle la logique de résolution.
-- Formate les données brutes des tableaux (reçues de `simplex_logic.py`) en HTML pour l'affichage.
-- Utilise le thème "Ocean" de Gradio pour une esthétique moderne.
+*   Construit avec **Gradio**.
+*   Définit l'interface utilisateur web (saisie, boutons, affichage).
+*   Gère les interactions et appelle la logique de résolution.
+*   Formate les tableaux en HTML.
+*   Utilise le thème "Ocean" de Gradio.
 
 ### Logique du Simplex (`simplex_logic.py`)
 
-- Contient toute la logique métier pour l'algorithme du Simplex.
-- Utilise **NumPy** pour les opérations sur les tableaux (matrices) et **Pandas** pour la structuration et la manipulation des données des tableaux du Simplex.
-- Fonctions principales :
-  - `standardize_problem` : Convertit le problème de l'utilisateur en forme standard, ajoutant les variables d'écart (`eᵢ` pour `≤`), d'excédent (`eᵢ` pour `≥`), et artificielles (`aᵢ` pour `≥` et `=`).
-  - `create_tableau` : Génère un DataFrame Pandas représentant un tableau du Simplex, incluant les calculs de `Zj` et `Cj-Zj`,
-  - `find_pivot_column` / `find_pivot_row` : Implémentent les règles de sélection de la variable entrante et sortante.
-  - `perform_pivot_operation` : Effectue les opérations de pivotage sur la matrice `A` et le vecteur `b`.
-  - `format_tableau_html` : Prend le DataFrame du tableau et le formate en une chaîne HTML stylisée pour un affichage précis .
-  - `solve_simplex_problem_style` : Orchestre l'ensemble du processus de résolution, gérant la Phase I (si nécessaire) et la Phase II.
+*   Contient la logique métier pour les algorithmes du Simplex.
+*   Utilise **NumPy** pour les opérations matricielles et **Pandas** pour la structuration des tableaux.
+*   Fonctions principales :
+    *   `standardize_problem` : Met le problème en forme standard, ajoutant variables d'écart (`eᵢ`), d'excédent (`eᵢ`), et artificielles (`aᵢ`). La gestion du signe des `bᵢ` est conditionnelle à la méthode choisie.
+    *   `create_hec_tableau` : Génère un DataFrame Pandas pour un tableau Simplex (style HEC).
+    *   `find_pivot_column_hec` / `find_pivot_row_hec` : Règles de sélection pour le Simplex Primal.
+    *   `find_dual_pivot_row_hec` / `find_dual_pivot_column_hec` : Règles de sélection pour le Simplex Dual.
+    *   `perform_pivot_operation_hec` : Opérations de pivotage.
+    *   `format_tableau_html_hec` : Formate le DataFrame du tableau en HTML stylisé.
+    *   `solve_simplex_main` : Orchestre le processus de résolution, appelant la logique Primal (Deux-Phases) ou Duale.
 
-## 7. Méthodologie : Algorithme du Simplex
-
-L'implémentation suit les étapes classiques de l'algorithme du Simplex, en adaptant la présentation des tableaux .
+## 7. Méthodologie : Algorithmes du Simplex
 
 ### Mise en Forme Standard
 
-Avant d'appliquer l'algorithme, le problème est converti :
+1.  **Objectif :** Min Z est converti en Max -Z.
+2.  **RHS `bᵢ` (pour Simplex Primal) :** Rendus non-négatifs (si `bᵢ < 0`, la contrainte est multipliée par -1 et l'inégalité inversée). Pour le Simplex Dual, les `bᵢ` négatifs sont conservés car ils indiquent l'infaisabilité primale initiale.
+3.  **Variables d'Écart/Excédent/Artificielles :**
+    *   `≤` : `+ eᵢ` (écart)
+    *   `≥` : `- eᵢ + aᵢ` (excédent, artificielle)
+    *   `=` : `+ aᵢ` (artificielle)
 
-1.  **Type d'Objectif :** Les problèmes de minimisation (Min Z) sont convertis en problèmes de maximisation (Max -Z).
-2.  **Membre Droit (RHS) :** Toutes les valeurs `bᵢ` des contraintes sont rendues non négatives.
-3.  **Variables d'Écart (Slack) :** Pour une contrainte `≤`, une variable d'écart `eᵢ ≥ 0` est ajoutée.
-    `∑ aᵢⱼxⱼ ≤ bᵢ  =>  ∑ aᵢⱼxⱼ + eᵢ = bᵢ`
-4.  **Variables d'Excédent (Surplus) et Artificielles :**
-    - Pour une contrainte `≥`, une variable d'excédent `eᵢ ≥ 0` est soustraite et une variable artificielle `aᵢ ≥ 0` est ajoutée.
-      `∑ aᵢⱼxⱼ ≥ bᵢ  =>  ∑ aᵢⱼxⱼ - eᵢ + aᵢ = bᵢ`
-    - Pour une contrainte `=`, une variable artificielle `aᵢ ≥ 0` est ajoutée.
-      `∑ aᵢⱼxⱼ = bᵢ  =>  ∑ aᵢⱼxⱼ + aᵢ = bᵢ`
+### Tableau du Simplex (Style HEC)
 
-Les variables d'écart et les variables artificielles (si présentes) forment généralement la base initiale.
+Le format du tableau s'inspire de celui-ci :
 
-### Tableau du Simplex
+![Format Tableau HEC](readme_images/hec_tableau_format_example.png)
 
-Le format du tableau affiché s'inspire de celui présenté ci-dessous :
+*   **Ligne `Coeff. dans Z` :** Coefficients `Cj` de toutes les variables.
+*   **Colonne `Base` :** Noms des variables de base.
+*   **Colonnes `Coef. Z` et `Var.base` :** Coefficients `Cb` des variables de base dans l'objectif actuel, et nom de la variable de base.
+*   **Corps :** Coefficients `aᵢⱼ`.
+*   **Colonne `bᵢ` :** Valeurs RHS.
+*   **Ligne `Zj` :** `∑ (Cbᵢ * aᵢⱼ)`. `Zj` sous `bᵢ` est la valeur de l'objectif.
+*   **Ligne `Cj - Zj` :** Ligne critère.
 
-![Format Tableau](readme_images/hec_tableau_format_example.png)
+### Simplex Primal et Méthode des Deux Phases
 
-- **Ligne `Coeff. dans Z` :** Coefficients `Cj` de toutes les variables dans la fonction objectif originale (ou modifiée pour la Phase I).
-- **Colonne `Base` :** Noms des variables de base actuelles.
-- **Colonnes `Coef. Z` et `Var.base` :** Coefficients `Cb` des variables de base dans l'objectif actuel, et répétition du nom de la variable de base.
-- **Corps du tableau :** Coefficients `aᵢⱼ` de la matrice des contraintes.
-- **Colonne `bᵢ` :** Valeurs actuelles du membre droit.
-- **Ligne `Zj` :** Calculée comme `∑ (Cbᵢ * aᵢⱼ)` pour chaque colonne `j`. La valeur `Zj` dans la colonne `bᵢ` est la valeur actuelle de la fonction objectif.
-- **Ligne `Cj - Zj` :** Ligne critère, utilisée pour déterminer la variable entrante et vérifier l'optimalité.
+*   **Phase I (si variables artificielles `aᵢ` présentes) :**
+    *   Objectif : Minimiser `W = ∑ aᵢ` (implémenté comme Max `-W`).
+    *   But : Obtenir une solution de base admissible pour le problème original.
+    *   Si `W_min > 0` à la fin, le problème original est infaisable.
+*   **Phase II :**
+    *   Utilise le tableau final de la Phase I (avec `W_min = 0`).
+    *   L'objectif original est utilisé.
+    *   Le Simplex standard est appliqué jusqu'à l'optimalité (`Cj-Zj ≤ 0` pour Max) ou la détection d'une solution non bornée.
+*   **Critères de pivot (Max Z) :**
+    *   Variable Entrante : Colonne avec le plus grand `Cj-Zj > 0`.
+    *   Variable Sortante : Ligne avec le plus petit ratio `bᵢ / aᵢₖ > 0` (où `k` est la colonne pivot).
 
-### Méthode des Deux Phases (pour contraintes `≥` et `=`)
+### Méthode du Simplex Dual
 
-Lorsque des variables artificielles sont introduites, l'algorithme procède en deux phases :
+*   **Condition de départ :** Le tableau doit être dual-admissible (ex: `Cj-Zj ≤ 0` pour Max Z) mais primal-infaisable (au moins un `bᵢ < 0` pour une variable de base).
+*   **Objectif :** Atteindre la faisabilité primale tout en maintenant la faisabilité duale.
+*   **Critères de pivot (Max Z, `Cj-Zj ≤ 0` maintenu) :**
+    *   Variable Sortante (Ligne Pivot `r`) : Ligne avec le `bᵣ` le plus négatif. Si tous les `bᵢ ≥ 0`, la solution est optimale.
+    *   Variable Entrante (Colonne Pivot `k`) : Parmi les `aᵣⱼ < 0` dans la ligne pivot `r`, choisir la colonne `k` qui minimise `| (Cj-Zj)ⱼ / aᵣⱼ |`. Si tous les `aᵣⱼ ≥ 0` dans la ligne pivot, le problème primal est infaisable (dual non borné).
 
-- **Phase I :**
-  - **Objectif :** Minimiser la somme des variables artificielles (`W = ∑ aᵢ`). Dans notre implémentation, nous maximisons `-W = -∑ aᵢ`.
-  - Le but est d'obtenir une solution de base admissible pour le problème original en éliminant les variables artificielles de la base (ou en s'assurant qu'elles sont nulles si elles y restent).
-  - Si à la fin de la Phase I, `W_min > 0` (c'est-à-dire `-W_max < 0`), le problème original n'a pas de solution admissible (infaisable).
-- **Phase II :**
-  - Si `W_min = 0`, on utilise le tableau final de la Phase I comme point de départ.
-  - Les colonnes des variables artificielles (si elles sont non basiques) sont ignorées.
-  - L'objectif original (maximiser Z ou -Z si c'était une minimisation) est utilisé pour calculer la ligne `Cj-Zj`.
-  - L'algorithme du Simplex standard est ensuite appliqué.
+## 8. Dualité en Programmation Linéaire
 
-## 8. Exemples
+### Principe de la Dualité
 
-### Problème Standard (PL)
+À chaque problème de programmation linéaire (appelé **problème primal P**), on peut associer un autre problème de programmation linéaire, appelé son **problème dual D**. La résolution de l'un fournit des informations directes sur la solution de l'autre. Leurs valeurs optimales, si elles existent, sont égales.
 
-**Maximiser Z = 10x₁ + 12x₂**
+### Exemple de Transformation Primal-Dual
+
+**Problème Primal (P) :**
+Maximiser `Z = 3x₁ + 5x₂`
 Sujet à :
-
-1.  `10x₁ + 5x₂ ≤ 200`
-2.  `2x₁ + 3x₂ ≤ 60`
-
-_(Vous pouvez inclure ici une capture d'écran de la saisie et une du résultat pour cet exemple simple)_
-
-### Problème avec Méthode des Deux Phases (PG)
-
-**Maximiser Z = 3x₁ + 5x₂**
-Sujet à :
-
 1.  `x₁ + 3x₂ ≤ 15`
 2.  `2x₁ + x₂ ≥ 8`
 3.  `x₁ + x₂ = 7`
+`x₁, x₂ ≥ 0`
 
-## 9. Développements Futurs Possibles
+**Problème Dual (D) correspondant :**
+Soient `y₁, y₂, y₃` les variables duales.
+Minimiser `W = 15y₁ - 8y₂ + 7y₃`  *(après avoir transformé la contrainte 2 du primal en `-2x₁ - x₂ ≤ -8` pour la dérivation)*
+Sujet à :
+1.  `y₁ - 2y₂ + y₃ ≥ 3`
+2.  `3y₁ - y₂ + y₃ ≥ 5`
+`y₁ ≥ 0`
+`y₂ ≥ 0`
+`y₃` est non restreinte en signe (URS - Unrestricted in Sign), car la contrainte 3 du primal est une égalité.
 
-- Analyse de sensibilité.
-- Résolution de problèmes en nombres entiers (Programmation Linéaire en Nombres Entiers).
-- Importation de problèmes depuis des fichiers (ex: format MPS).
-- Visualisation graphique des régions admissibles pour les problèmes à 2 variables.
-- Amélioration de la gestion des cas de dégénérescence ou de solutions optimales multiples.
+*(Note : La transformation exacte du primal pour dériver le dual peut varier légèrement selon les conventions, notamment pour les contraintes `≥` et `=`. L'exemple ci-dessus suit une approche commune.)*
+
+## 9. Exemples d'Utilisation
+
+### Problème Standard (Simplex Primal)
+**Maximiser Z = 10x₁ + 12x₂**
+Sujet à : `10x₁ + 5x₂ ≤ 200`, `2x₁ + 3x₂ ≤ 60`.
+
+### Problème avec Méthode des Deux Phases
+**Maximiser Z = 3x₁ + 5x₂**
+Sujet à : `x₁ + 3x₂ ≤ 15`, `2x₁ + x₂ ≥ 8`, `x₁ + x₂ = 7`.
+
+### Problème pour le Simplex Dual
+**Maximiser Z = -2x₁ - x₂** (Minimiser `2x₁ + x₂`)
+Sujet à (après transformation pour tableau dual-admissible initial) :
+1.  `-3x₁ - x₂ ≤ -3`  (original : `3x₁ + x₂ ≥ 3`)
+2.  `-4x₁ - 3x₂ ≤ -6` (original : `4x₁ + 3x₂ ≥ 6`)
+
+*(Pour ces exemples, vous pouvez ajouter des captures d'écran de l'application montrant la saisie et les résultats.)*
+
+## 10. Développements Futurs Possibles
+
+*   Analyse de sensibilité.
+*   Résolution de problèmes en nombres entiers.
+*   Importation/Exportation de problèmes (ex: format MPS, CSV).
+*   Visualisation graphique (pour 2 variables).
+*   Gestion avancée de la dégénérescence.
 
 ---
 
-Ce solveur a été développé dans le but de fournir un outil clair et didactique pour l'apprentissage et l'application de la méthode du Simplex.
+Ce solveur a été développé dans le but de fournir un outil clair et didactique pour l'apprentissage et l'application des méthodes du Simplex.
