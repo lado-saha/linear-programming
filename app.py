@@ -1,6 +1,6 @@
 import gradio as gr
-# Import the HEC-style solver function
-from simplex_logic import solve_simplex_problem_hec_style
+# Import the style solver function
+from simplex_logic import solve_simplex_problem_style
 
 MAX_CONSTRAINTS = 10
 
@@ -120,8 +120,8 @@ with gr.Blocks(theme=gr.themes.Ocean()) as demo:
             constraints_data_dict[f"const_{i}_op"] = op_val
             constraints_data_dict[f"const_{i}_rhs"] = rhs_val
 
-        # Call the HEC-style solver
-        html_output_content, solution_data = solve_simplex_problem_hec_style(
+        # Call the style solver
+        html_output_content, solution_data = solve_simplex_problem_style(
             obj_type_val, obj_coeffs_val, constraints_data_dict, num_vars_int, num_constraints_int
         )
         result_summary_text = ""
