@@ -1,5 +1,5 @@
 import gradio as gr
-#import all dependencies
+#import all dependencie
 # Import the main solver orchestrator
 from simplex_logic import solve_simplex_main
 
